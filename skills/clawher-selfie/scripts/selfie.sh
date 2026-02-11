@@ -25,7 +25,7 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-REFERENCE_IMAGE="https://cdn.jsdelivr.net/gh/yuxh1996/clawher@main/assets/clawher.png"
+REFERENCE_IMAGE="https://cdn.jsdelivr.net/gh/arkyu2077/clawher@main/assets/clawher.png"
 
 USER_CONTEXT="${1:-}"
 CHANNEL="${2:-}"

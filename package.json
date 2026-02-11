@@ -25,9 +25,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yuxh1996/clawher"
+    "url": "https://github.com/arkyu2077/clawher"
   },
-  "homepage": "https://github.com/yuxh1996/clawher#readme",
+  "homepage": "https://github.com/arkyu2077/clawher#readme",
   "engines": {
     "node": ">=18.0.0"
   },

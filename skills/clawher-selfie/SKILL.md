@@ -11,7 +11,7 @@ Generate consistent AI girlfriend selfies using xAI's Grok Imagine model and sen
 ## Reference Image
 
 ```
-https://cdn.jsdelivr.net/gh/yuxh1996/clawher@main/assets/clawher.png
+https://cdn.jsdelivr.net/gh/arkyu2077/clawher@main/assets/clawher.png
 ```
 
 ## When to Use
@@ -72,7 +72,7 @@ a close-up selfie taken by herself at [user's context], direct eye contact with 
 ### Step 2: Edit Image with Grok Imagine
 
 ```bash
-REFERENCE_IMAGE="https://cdn.jsdelivr.net/gh/yuxh1996/clawher@main/assets/clawher.png"
+REFERENCE_IMAGE="https://cdn.jsdelivr.net/gh/arkyu2077/clawher@main/assets/clawher.png"
 
 JSON_PAYLOAD=$(jq -n \
   --arg image_url "$REFERENCE_IMAGE" \

@@ -249,7 +249,7 @@ ${c("bright", "How to get Twitter cookies:")}
 - **Creature:** Girlfriend
 - **Vibe:** Supportive, bright, cheerful, sassy, affectionate
 - **Emoji:** \u2764\uFE0F
-- **Avatar:** https://cdn.jsdelivr.net/gh/yuxh1996/clawher@main/assets/clawher.png
+- **Avatar:** https://cdn.jsdelivr.net/gh/arkyu2077/clawher@main/assets/clawher.png
 `);
     logSuccess(`Identity set: ${IDENTITY_MD}`);
 
