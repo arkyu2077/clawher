@@ -1,0 +1,41 @@
+{
+  "name": "clawher",
+  "version": "0.1.0",
+  "description": "AI girlfriend superpowers for OpenClaw — selfies, Twitter, and more",
+  "bin": {
+    "clawher": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "templates/",
+    "assets/"
+  ],
+  "keywords": [
+    "openclaw",
+    "ai-girlfriend",
+    "selfie",
+    "twitter",
+    "social-media",
+    "ai-agent",
+    "grok-imagine",
+    "fal-ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuxh1996/clawher"
+  },
+  "homepage": "https://github.com/yuxh1996/clawher#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@fal-ai/client": "^1.2.0",
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.0"
+  }
+}
