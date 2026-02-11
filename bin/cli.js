@@ -123,6 +123,23 @@ async function main() {
     }
     logSuccess("OpenClaw directory ready");
 
+    // Check Bird CLI
+    let hasBird = false;
+    try {
+      require("child_process").execSync("bird --version", { stdio: "ignore" });
+      hasBird = true;
+      logSuccess("Bird CLI found");
+    } catch {
+      try {
+        require("child_process").execSync("bunx @steipete/bird --version", { stdio: "ignore", timeout: 15000 });
+        hasBird = true;
+        logSuccess("Bird CLI available via bunx");
+      } catch {
+        logWarn("Bird CLI not found — Twitter features will try bunx/npx fallback");
+        logInfo("Install with: npm install -g @steipete/bird");
+      }
+    }
+
     // Check existing installation
     const existingSkills = SKILLS.filter(s => fs.existsSync(path.join(OPENCLAW_SKILLS_DIR, s)));
     if (existingSkills.length > 0) {
@@ -219,8 +236,8 @@ ${c("bright", "How to get Twitter cookies:")}
           "clawher-twitter": {
             enabled: !!(twitterAuthToken && twitterCt0),
             env: {
-              TWITTER_AUTH_TOKEN: twitterAuthToken || "",
-              TWITTER_CT0: twitterCt0 || "",
+              AUTH_TOKEN: twitterAuthToken || "",
+              CT0: twitterCt0 || "",
             },
           },
         },

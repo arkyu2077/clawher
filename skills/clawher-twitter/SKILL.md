@@ -1,46 +1,91 @@
 ---
 name: clawher-twitter
-description: Post images and text to Twitter/X using cookie-based authentication via OpenClaw
-allowed-tools: Bash(npm:*) Bash(npx:*) Bash(openclaw:*) Bash(curl:*) Read Write WebFetch
+description: Post images and text to Twitter/X using Bird CLI via OpenClaw
+allowed-tools: Bash(npm:*) Bash(npx:*) Bash(bunx:*) Bash(bird:*) Bash(openclaw:*) Bash(curl:*) Read Write WebFetch
 ---
 
 # ClawHer Twitter
 
-Post images and text to the user's Twitter/X account. Works alongside `clawher-selfie` to share AI-generated selfies on social media.
+Post images, text, and replies to the user's Twitter/X account using [Bird CLI](https://github.com/steipete/bird). Works alongside `clawher-selfie` to share AI-generated selfies on social media.
 
 ## Required Environment Variables
 
 ```bash
-TWITTER_AUTH_TOKEN=your_auth_token   # Twitter auth_token cookie
-TWITTER_CT0=your_ct0_token           # Twitter ct0 cookie (CSRF token)
+AUTH_TOKEN=your_auth_token   # Twitter auth_token cookie
+CT0=your_ct0_token           # Twitter ct0 cookie (CSRF token)
 ```
 
 ## When to Use
 
-- User says "post this to Twitter", "tweet this", "share on Twitter"
+- User says "post this to Twitter", "tweet this", "share on Twitter/X"
 - User says "post my selfie to Twitter", "put this on X"
+- User says "reply to this tweet", "check my mentions"
 - User asks to share a generated image on social media
 - After generating a selfie, if user wants it posted publicly
 
-## Workflow
+## Commands
 
-1. **Get content**: Determine the image URL and tweet text
-2. **Upload media**: Upload the image to Twitter via media/upload API
-3. **Create tweet**: Post the tweet with the uploaded media
-4. **Return result**: Share the tweet URL with the user
-
-## Step-by-Step Instructions
-
-### Step 1: Prepare Content
-
-- **Image URL**: From clawher-selfie output or user-provided URL
-- **Tweet text**: Compose or ask user
-
-### Step 2: Post to Twitter
+### Post a tweet with image
 
 ```bash
-./scripts/twitter-post.sh "$IMAGE_URL" "$TWEET_TEXT"
+bird tweet "Just vibing ✨" --media "/tmp/selfie.jpg" --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
 ```
+
+### Post text-only tweet
+
+```bash
+bird tweet "Hello world" --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+### Reply to a tweet
+
+```bash
+bird reply <tweet-id-or-url> "Nice!" --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+### Read a tweet
+
+```bash
+bird read <tweet-id-or-url> --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+### Check mentions
+
+```bash
+bird mentions --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+### Search tweets
+
+```bash
+bird search "keyword" --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+### Check who I am
+
+```bash
+bird whoami --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+```
+
+## Workflow for Posting Selfie to Twitter
+
+1. **clawher-selfie** generates image → returns image URL
+2. **Download image** to local temp file:
+   ```bash
+   curl -sL -o /tmp/clawher_selfie.jpg "$IMAGE_URL"
+   ```
+3. **Post with Bird**:
+   ```bash
+   bird tweet "$TWEET_TEXT" --media /tmp/clawher_selfie.jpg --auth-token "$AUTH_TOKEN" --ct0 "$CT0"
+   ```
+4. Clean up temp file
+
+## Notes
+
+- Bird uses Twitter's internal GraphQL endpoints, query IDs auto-refresh
+- `--media` accepts local file paths (up to 4 images or 1 video)
+- Add `--json` to any read command for structured output
+- Add `--plain` for stable, parseable output without emoji/color
 
 ## How Users Get Their Twitter Cookies
 
@@ -51,7 +96,6 @@ TWITTER_CT0=your_ct0_token           # Twitter ct0 cookie (CSRF token)
 
 ## Error Handling
 
-- **401 Unauthorized**: Cookies expired, user needs to re-extract from browser
-- **403 Forbidden**: Account restricted or ct0 mismatch
-- **Media upload failed**: Image too large (max 5MB) or wrong format
-- **Rate limited**: ~300 tweets/3 hours, wait and retry
+- **Missing credentials**: Ensure AUTH_TOKEN and CT0 are set
+- **401/403**: Cookies expired, user needs to re-extract from browser
+- **Rate limited**: Wait and retry

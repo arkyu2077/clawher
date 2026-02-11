@@ -7,7 +7,7 @@ AI girlfriend superpowers for [OpenClaw](https://github.com/openclaw/openclaw) �
 ClawHer gives your OpenClaw AI agent the ability to:
 
 - **Generate selfies** — Consistent AI girlfriend selfies via xAI Grok Imagine, sent to Telegram, Discord, WhatsApp, etc.
-- **Post to Twitter/X** — Share images and text to Twitter using cookie-based auth, no API keys needed.
+- **Post to Twitter/X** — Share images and text to Twitter via [Bird CLI](https://github.com/steipete/bird), using cookie-based auth, no API keys needed.
 
 ## Quick Start
 
@@ -41,14 +41,15 @@ Generates AI girlfriend selfies using a fixed reference image and xAI Grok Imagi
 
 ### clawher-twitter
 
-Posts images and text to Twitter/X using browser cookies.
+Posts images and text to Twitter/X via [Bird CLI](https://github.com/steipete/bird). Also supports replies, reading threads, searching tweets, and checking mentions.
 
 **Triggers:**
 - "Post this to Twitter"
 - "Tweet this selfie"
-- "Share on X"
+- "Reply to this tweet"
+- "Check my mentions"
 
-**Requires:** `TWITTER_AUTH_TOKEN` + `TWITTER_CT0` cookies from your browser.
+**Requires:** `auth_token` + `ct0` cookies from your browser.
 
 **How to get cookies:**
 1. Open [twitter.com](https://twitter.com) in Chrome, log in
@@ -86,8 +87,8 @@ After installation, credentials are stored in `~/.openclaw/openclaw.json`:
       "clawher-twitter": {
         "enabled": true,
         "env": {
-          "TWITTER_AUTH_TOKEN": "your_token",
-          "TWITTER_CT0": "your_ct0"
+          "AUTH_TOKEN": "your_token",
+          "CT0": "your_ct0"
         }
       }
     }
