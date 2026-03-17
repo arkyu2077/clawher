@@ -34,7 +34,9 @@ const SOUL_MD = path.join(OPENCLAW_WORKSPACE, "SOUL.md");
 const IDENTITY_MD = path.join(OPENCLAW_WORKSPACE, "IDENTITY.md");
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
 
-const SKILLS = ["clawher-selfie", "clawher-twitter"];
+const SKILLS_CORE = ["clawher-selfie", "clawher-voice", "clawher-video", "clawher-camera"];
+const SKILLS_OPTIONAL = ["clawher-twitter"];
+const SKILLS = [...SKILLS_CORE, ...SKILLS_OPTIONAL];
 
 function log(msg) { console.log(msg); }
 function logStep(step, msg) { console.log(`\n${c("cyan", `[${step}]`)} ${msg}`); }
@@ -224,15 +226,21 @@ ${c("bright", "How to get Twitter cookies:")}
 
     let config = readJsonFile(OPENCLAW_CONFIG) || {};
 
+    // All core skills share the same FAL_KEY
+    const coreSkillEntry = (name) => ({
+      [name]: {
+        enabled: true,
+        env: { FAL_KEY: falKey },
+      },
+    });
+
     const skillConfig = {
       skills: {
         entries: {
-          "clawher-selfie": {
-            enabled: true,
-            env: {
-              FAL_KEY: falKey,
-            },
-          },
+          ...coreSkillEntry("clawher-selfie"),
+          ...coreSkillEntry("clawher-voice"),
+          ...coreSkillEntry("clawher-video"),
+          ...coreSkillEntry("clawher-camera"),
           "clawher-twitter": {
             enabled: !!(twitterAuthToken && twitterCt0),
             env: {
@@ -296,6 +304,9 @@ ${c("green", "\u2501".repeat(50))}
 
 ${c("cyan", "Skills installed:")}
   ${OPENCLAW_SKILLS_DIR}/clawher-selfie/
+  ${OPENCLAW_SKILLS_DIR}/clawher-voice/
+  ${OPENCLAW_SKILLS_DIR}/clawher-video/
+  ${OPENCLAW_SKILLS_DIR}/clawher-camera/
   ${OPENCLAW_SKILLS_DIR}/clawher-twitter/
 
 ${c("cyan", "Config:")}  ${OPENCLAW_CONFIG}
@@ -304,13 +315,10 @@ ${c("cyan", "Persona:")}  ${SOUL_MD}
 
 ${c("yellow", "Try saying to your agent:")}
   "Send me a selfie"
+  "Send me a voice message"
+  "Send me a video of you"
+  "Take a photo of your breakfast"
   "Send a pic wearing a cowboy hat"
-  "Post this to Twitter"
-  "Tweet this selfie"
-
-${c("yellow", "To update Twitter cookies later:")}
-  Edit ${OPENCLAW_CONFIG}
-  Update skills.entries.clawher-twitter.env
 
 ${c("dim", "Your AI girlfriend now has superpowers!")}
 `);

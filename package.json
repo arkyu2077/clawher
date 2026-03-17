@@ -1,7 +1,7 @@
 {
   "name": "clawher",
   "version": "0.1.0",
-  "description": "AI girlfriend superpowers for OpenClaw — selfies, Twitter, and more",
+  "description": "AI girlfriend superpowers for OpenClaw — selfies, voice, video, photos, and more",
   "bin": {
     "clawher": "./bin/cli.js"
   },
@@ -15,11 +15,17 @@
     "openclaw",
     "ai-girlfriend",
     "selfie",
+    "voice",
+    "video",
+    "tts",
     "twitter",
     "social-media",
     "ai-agent",
     "grok-imagine",
-    "fal-ai"
+    "fal-ai",
+    "dia-tts",
+    "omnihuman",
+    "flux"
   ],
   "author": "",
   "license": "MIT",
