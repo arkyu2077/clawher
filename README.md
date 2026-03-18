@@ -7,8 +7,8 @@ AI girlfriend superpowers for [OpenClaw](https://github.com/openclaw/openclaw) �
 ClawHer gives your OpenClaw AI agent the ability to:
 
 - **Generate selfies** — Consistent AI girlfriend selfies via xAI Grok Imagine
-- **Send voice messages** — Natural, expressive TTS via Dia TTS / F5 TTS
-- **Send video messages** — Talking-head videos, animated selfies, and short clips via OmniHuman / Kling / Wan 2.5
+- **Send voice messages** — Natural, expressive TTS with provider fallback (Dia TTS → F5 TTS) and local-file delivery
+- **Send video messages** — Talking-head videos, animated selfies, and short clips via OmniHuman v1.5 / Veo 3 Fast / Kling, downloaded locally before sending
 - **Take photos** — Generate scene photos (food, views, pets, anything) via FLUX
 - **Post to Twitter/X** — Share images and text via [Bird CLI](https://github.com/steipete/bird)
 
@@ -39,7 +39,7 @@ Generates consistent AI girlfriend selfies using a fixed reference image and xAI
 
 ### clawher-voice
 
-Generates natural voice messages using Dia TTS (default) or F5 TTS (voice cloning).
+Generates natural voice messages using a configurable provider chain. Default order: Dia TTS first, then F5 TTS when a reference voice is configured.
 
 **Triggers:** "Send me a voice message", "Say something to me", "Talk to me"
 
@@ -53,7 +53,7 @@ Generates talking-head videos, animated selfies, and short video clips.
 
 **Modes:**
 - **Talking** — Selfie + voice → lip-synced video (OmniHuman)
-- **Text-to-video** — Description → video clip (Wan 2.5)
+- **Text-to-video** — Description → video clip (Veo 3 Fast by default)
 - **Animate** — Selfie → animated clip (Kling v3)
 
 ### clawher-camera

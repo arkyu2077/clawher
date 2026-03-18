@@ -1,12 +1,12 @@
 ---
 name: clawher-video
-description: Generate AI girlfriend talking videos and short clips, send to messaging channels via OpenClaw
+description: Generate AI girlfriend talking videos and short clips with stable local-media delivery and configurable model routing
 allowed-tools: Bash(npm:*) Bash(npx:*) Bash(openclaw:*) Bash(curl:*) Read Write WebFetch
 ---
 
 # ClawHer Video
 
-Generate talking-head videos and short video clips using fal.ai models. Combines selfie images with voice audio to create realistic video messages, or generates videos from text descriptions.
+Generate talking-head videos and short video clips using fal.ai models. The stable path is: generate remotely, download locally, validate the file, then upload that local file to the messaging channel.
 
 ## When to Use
 
@@ -50,29 +50,23 @@ Best for: Turning a selfie into a short animated clip
 ## Models
 
 ### Talking Video: OmniHuman v1.5 (recommended)
-- Model ID: `fal-ai/bytedance/omnihuman`
+- Model ID: `fal-ai/bytedance/omnihuman/v1.5`
 - Cost: ~$0.14/second of video
 - Input: Image URL + Audio URL
 - Output: MP4 video with lip-sync and natural body motion
 - Max audio: 30 seconds
 
-### Text-to-Video: Wan 2.5 (budget-friendly)
-- Model ID: `fal-ai/wan-2-5`
-- Cost: ~$0.05/second
-- Input: Text prompt
-- Output: MP4 video
-
-### Text-to-Video: Veo 3 Fast (higher quality)
+### Text-to-Video: Veo 3 Fast (default text model)
 - Model ID: `fal-ai/veo3/fast`
-- Cost: ~$0.10-0.15/second
 - Input: Text prompt
 - Output: MP4 video with optional audio
+- Can be overridden via `CLAWHER_VIDEO_TEXT_MODEL`
 
 ### Image-to-Video: Kling v3
 - Model ID: `fal-ai/kling-video/v3/standard/image-to-video`
-- Cost: ~$0.07/second
 - Input: Image URL + motion prompt
 - Output: MP4 video
+- Can be overridden via `CLAWHER_VIDEO_ANIMATE_MODEL`
 
 ## Step-by-Step Instructions
 
@@ -120,7 +114,7 @@ JSON_PAYLOAD=$(jq -n \
   --arg prompt "$PROMPT" \
   '{prompt: $prompt}')
 
-curl -X POST "https://fal.run/fal-ai/wan-2-5" \
+curl -X POST "https://fal.run/fal-ai/veo3/fast" \
   -H "Authorization: Key $FAL_KEY" \
   -H "Content-Type: application/json" \
   -d "$JSON_PAYLOAD"
@@ -143,14 +137,15 @@ curl -X POST "https://fal.run/fal-ai/kling-video/v3/standard/image-to-video" \
   -d "$JSON_PAYLOAD"
 ```
 
-### Step 3: Send Video via OpenClaw
+### Step 3: Download + Send Video via OpenClaw
 
 ```bash
+curl -L "$VIDEO_URL" -o ./video.mp4
 openclaw message send \
   --action send \
   --channel "<TARGET_CHANNEL>" \
   --message "<CAPTION_TEXT>" \
-  --media "<VIDEO_URL>"
+  --media ./video.mp4
 ```
 
 ## Prompt Guide for Videos

@@ -1,12 +1,12 @@
 ---
 name: clawher-voice
-description: Generate AI girlfriend voice messages with Dia TTS and send to messaging channels via OpenClaw
+description: Generate AI girlfriend voice messages with provider fallback and local-media delivery for stable sending
 allowed-tools: Bash(npm:*) Bash(npx:*) Bash(openclaw:*) Bash(curl:*) Read Write WebFetch
 ---
 
 # ClawHer Voice
 
-Generate natural, expressive voice messages using fal.ai's Dia TTS model and send them across messaging platforms via OpenClaw.
+Generate natural, expressive voice messages with a fallback model chain and local-media delivery, so Telegram/Discord receive an actual uploaded file instead of relying on a remote media URL.
 
 ## When to Use
 
@@ -33,9 +33,10 @@ VOICE_REF_TEXT="transcript..."    # Transcript of reference audio (required with
 ## Workflow
 
 1. **Compose spoken text** based on user request and persona
-2. **Generate audio** via fal.ai Dia TTS (or F5 TTS for voice cloning)
-3. **Extract audio URL** from response
-4. **Send to OpenClaw** with target channel(s)
+2. **Try providers in order** (`CLAWHER_TTS_MODELS`)
+3. **Extract audio URL** from the first successful provider
+4. **Download audio locally** and verify the file is non-empty
+5. **Send the local file** to OpenClaw so delivery is stable even when remote URLs are blocked
 
 ## Models
 
@@ -47,13 +48,13 @@ Best for: Natural dialogue, emotional expression, no setup needed
 - Features: Emotion tags, laughter, natural pauses
 - No reference audio needed
 
-### Alternative: F5 TTS (voice cloning)
-Best for: Consistent character voice across all messages
+### Fallback: F5 TTS (voice cloning)
+Best for: Consistent character voice across all messages when a reference voice is configured
 
 - Model ID: `fal-ai/f5-tts`
 - Cost: ~$0.05 per 1,000 characters
-- Requires: Reference audio URL + transcript
-- Use when `VOICE_REF_URL` is set
+- Requires: `VOICE_REF_URL` + `VOICE_REF_TEXT`
+- Activated through `CLAWHER_TTS_MODELS` fallback order
 
 ## Emotion & Expression Guide
 
