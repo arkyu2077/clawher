@@ -39,7 +39,7 @@ Generates consistent AI girlfriend selfies using a fixed reference image and xAI
 
 ### clawher-voice
 
-Generates natural voice messages using a configurable provider chain. Default order: Dia TTS first, then F5 TTS when a reference voice is configured.
+Generates natural voice messages using a configurable provider chain. Default order: Dia TTS first, then F5 TTS when a reference voice is configured, then local `macos-say` as a reliability fallback on macOS.
 
 **Triggers:** "Send me a voice message", "Say something to me", "Talk to me"
 

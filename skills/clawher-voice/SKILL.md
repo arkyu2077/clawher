@@ -34,9 +34,9 @@ VOICE_REF_TEXT="transcript..."    # Transcript of reference audio (required with
 
 1. **Compose spoken text** based on user request and persona
 2. **Try providers in order** (`CLAWHER_TTS_MODELS`)
-3. **Extract audio URL** from the first successful provider
-4. **Download audio locally** and verify the file is non-empty
-5. **Send the local file** to OpenClaw so delivery is stable even when remote URLs are blocked
+3. **If a remote provider succeeds**, extract its audio URL; otherwise fall back to `macos-say` on macOS
+4. **Normalize to a local audio file** and verify the file is non-empty
+5. **Send the local file** to OpenClaw so delivery is stable even when remote URLs are blocked or a provider is flaky
 
 ## Models
 
