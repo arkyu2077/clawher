@@ -23,11 +23,21 @@ repo_root() {
   cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd
 }
 
+workspace_root() {
+  local root
+  root="$(cd "$(repo_root)/.." && pwd)"
+  echo "$root"
+}
+
 media_dir() {
   local root
-  root="$(repo_root)"
-  mkdir -p "$root/.clawher-media"
-  echo "$root/.clawher-media"
+  if [ -n "${CLAWHER_MEDIA_ROOT:-}" ]; then
+    root="$CLAWHER_MEDIA_ROOT"
+  else
+    root="$(workspace_root)/tmp/clawher-media"
+  fi
+  mkdir -p "$root"
+  echo "$root"
 }
 
 json_get_first() {
@@ -61,20 +71,99 @@ assert_nonempty_file() {
   fi
 }
 
-send_local_media() {
-  local channel="$1"
+parse_channel_target() {
+  local raw="$1"
+  if [[ "$raw" == *:* ]]; then
+    local channel="${raw%%:*}"
+    local target="${raw#*:}"
+    echo "$channel"$'\n'"$target"
+  else
+    log_error "Channel target must look like <channel>:<target>, e.g. telegram:691799783"
+    exit 1
+  fi
+}
+
+telegram_bot_token() {
+  if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+    echo "$TELEGRAM_BOT_TOKEN"
+    return 0
+  fi
+  local cfg="$HOME/.openclaw/openclaw.json"
+  if [ -f "$cfg" ]; then
+    jq -r '.channels.telegram.botToken // empty' "$cfg"
+    return 0
+  fi
+  return 1
+}
+
+telegram_send_local_media() {
+  local chat_id="$1"
   local path="$2"
   local caption="$3"
   local mode="${4:-media}"
+  local token method field mime
+
+  token="$(telegram_bot_token)"
+  if [ -z "$token" ]; then
+    log_error "Telegram fallback requires TELEGRAM_BOT_TOKEN or ~/.openclaw/openclaw.json"
+    exit 1
+  fi
+
+  mime="$(file --mime-type -b "$path")"
+  case "$mode:$mime" in
+    voice:*)
+      method="sendVoice"
+      field="voice"
+      ;;
+    *:video/*)
+      method="sendVideo"
+      field="video"
+      ;;
+    *:image/*)
+      method="sendPhoto"
+      field="photo"
+      ;;
+    *)
+      method="sendDocument"
+      field="document"
+      ;;
+  esac
+
+  curl -sS --fail-with-body -X POST "https://api.telegram.org/bot${token}/${method}" \
+    -F "chat_id=${chat_id}" \
+    -F "${field}=@${path}" \
+    -F "caption=${caption}" >/dev/null
+}
+
+send_local_media() {
+  local destination="$1"
+  local path="$2"
+  local caption="$3"
+  local mode="${4:-media}"
+  local parsed channel target
 
   assert_nonempty_file "$path"
 
-  local cmd=(openclaw message send --action send --channel "$channel" --media "$path")
+  parsed="$(parse_channel_target "$destination")"
+  channel="$(printf '%s' "$parsed" | sed -n '1p')"
+  target="$(printf '%s' "$parsed" | sed -n '2p')"
+
+  local cmd=(openclaw message send --channel "$channel" --target "$target" --media "$path")
   if [ -n "$caption" ]; then
     cmd+=(--message "$caption")
   fi
-  if [ "$mode" = "voice" ]; then
-    cmd+=(--as-voice)
+
+  if "${cmd[@]}" >/dev/null 2>"$(media_dir)/last-send-error.log"; then
+    return 0
   fi
-  "${cmd[@]}"
+
+  if [ "$channel" = "telegram" ]; then
+    log_warn "OpenClaw local-media send failed; falling back to Telegram Bot API"
+    telegram_send_local_media "$target" "$path" "$caption" "$mode"
+    return 0
+  fi
+
+  log_error "Local media send failed and no fallback is configured for channel: $channel"
+  cat "$(media_dir)/last-send-error.log" >&2 || true
+  exit 1
 }
